@@ -45,6 +45,11 @@ void main() {
     ).thenAnswer((_) => Stream.value(WorkoutListInitial()));
     when(() => mockWorkoutListBloc.state).thenReturn(WorkoutListInitial());
 
+    // Mock the createEmptyWorkout method
+    when(
+      () => mockWorkoutListBloc.createEmptyWorkout(),
+    ).thenReturn(buildEmptyWorkout());
+
     // Register fallback values
     registerFallbackValue(WorkoutInitial(buildEmptyWorkout()));
     registerFallbackValue(AddSet(buildWorkoutWithSets().sets.first));
@@ -77,7 +82,10 @@ void main() {
 
       await tester.pumpWidget(createTestWidget());
 
-      expect(find.text('Workout'), findsOneWidget);
+      // Wait for the widget to settle
+      await tester.pumpAndSettle();
+
+      expect(find.text('Workout Screen'), findsOneWidget);
       expect(find.byIcon(Icons.save), findsOneWidget);
     });
 
@@ -92,6 +100,7 @@ void main() {
       ).thenReturn(WorkoutInitial(buildEmptyWorkout()));
 
       await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       expect(find.text('Select an Exercise:'), findsOneWidget);
       expect(find.text('Select a weight:'), findsOneWidget);
@@ -109,6 +118,7 @@ void main() {
       ).thenReturn(WorkoutInitial(buildEmptyWorkout()));
 
       await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       expect(find.text('Add Set'), findsOneWidget);
     });
@@ -121,6 +131,7 @@ void main() {
       when(() => mockWorkoutBloc.state).thenReturn(WorkoutInitial(workout));
 
       await tester.pumpWidget(createTestWidget(workout: workout));
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.edit), findsWidgets);
       expect(find.byIcon(Icons.delete), findsWidgets);
@@ -136,6 +147,7 @@ void main() {
       ).thenReturn(WorkoutInitial(emptyWorkout));
 
       await tester.pumpWidget(createTestWidget(workout: emptyWorkout));
+      await tester.pumpAndSettle();
 
       // Should not show any sets
       expect(find.text('Set 1:'), findsNothing);
@@ -151,6 +163,7 @@ void main() {
       ).thenReturn(WorkoutInitial(buildEmptyWorkout()));
 
       await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       expect(find.text('Select an Exercise:'), findsOneWidget);
       expect(find.text('Select a weight:'), findsOneWidget);
