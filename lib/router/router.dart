@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:magic_test/feature/workout/screen/workout_screen.dart';
-import 'package:magic_test/feature/workoutList/bloc/screen/workout_list_screen.dart';
+import 'package:magic_test/feature/workoutList/screen/workout_list_screen.dart';
 import 'package:magic_test/models/workout.dart';
 
 final appRouter = GoRouter(
