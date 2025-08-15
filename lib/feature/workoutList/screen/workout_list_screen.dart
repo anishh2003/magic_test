@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:magic_test/core/const.dart';
 import 'package:magic_test/feature/workoutList/bloc/workout_list_bloc.dart';
 
 class WorkoutListScreen extends StatelessWidget {
@@ -9,7 +10,7 @@ class WorkoutListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Workout List')),
+      appBar: AppBar(title: const Text(Constants.workoutListScreen)),
       body: BlocConsumer<WorkoutListBloc, WorkoutListState>(
         listener: (context, state) {
           if (state is WorkoutListFailure) {
@@ -23,7 +24,7 @@ class WorkoutListScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (state is WorkoutListSuccess) {
             if (state.workouts.isEmpty) {
-              return const Center(child: Text("No workouts yet"));
+              return const Center(child: Text(Constants.noWorkoutsYet));
             }
             return ListView.builder(
               itemCount: state.workouts.length,
@@ -49,15 +50,14 @@ class WorkoutListScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           final bloc = context.read<WorkoutListBloc>();
-          // Ensure we have a valid state before creating workout
+
           if (bloc.state is WorkoutListSuccess ||
               bloc.state is WorkoutListInitial) {
             final newWorkout = bloc.createEmptyWorkout();
             context.push('/workout', extra: newWorkout);
           } else {
-            // If not in valid state, show error
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please wait for workouts to load')),
+              const SnackBar(content: Text(Constants.waitforWorkoutsToLoad)),
             );
           }
         },
