@@ -1,12 +1,17 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:magic_test/feature/workoutList/repository/workout_list_repository.dart';
 import 'package:magic_test/models/workout.dart';
+
 import 'package:uuid/uuid.dart';
+
 part 'workout_list_event.dart';
 part 'workout_list_state.dart';
 
 class WorkoutListBloc extends Bloc<WorkoutListEvent, WorkoutListState> {
-  WorkoutListBloc() : super(WorkoutListInitial()) {
+  final WorkoutRepository repository;
+
+  WorkoutListBloc(this.repository) : super(WorkoutListInitial()) {
     on<LoadWorkouts>(_onLoad);
     on<AddWorkout>(_onAdd);
     on<UpdateWorkout>(_onUpdate);
@@ -22,8 +27,7 @@ class WorkoutListBloc extends Bloc<WorkoutListEvent, WorkoutListState> {
     if (state is WorkoutListInitial) {
       emit(WorkoutListLoading());
       await Future.delayed(const Duration(milliseconds: 1000));
-      //TODO : fill this with repo workouts
-      storedWorkouts = [];
+      storedWorkouts = repository.getWorkouts();
     }
     emit(WorkoutListSuccess([...storedWorkouts]));
   }
@@ -33,6 +37,7 @@ class WorkoutListBloc extends Bloc<WorkoutListEvent, WorkoutListState> {
       final current = (state as WorkoutListSuccess).workouts;
       emit(WorkoutListSuccess([...current, event.workout]));
     }
+    repository.saveWorkout(event.workout);
   }
 
   void _onUpdate(UpdateWorkout event, Emitter<WorkoutListState> emit) {
@@ -42,6 +47,7 @@ class WorkoutListBloc extends Bloc<WorkoutListEvent, WorkoutListState> {
           .toList();
       emit(WorkoutListSuccess(updatedList));
     }
+    repository.saveWorkout(event.workout);
   }
 
   void _onDelete(DeleteWorkout event, Emitter<WorkoutListState> emit) {
@@ -51,6 +57,7 @@ class WorkoutListBloc extends Bloc<WorkoutListEvent, WorkoutListState> {
           .toList();
       emit(WorkoutListSuccess(updatedList));
     }
+    repository.deleteWorkout(event.id);
   }
 
   Workout createEmptyWorkout() {
